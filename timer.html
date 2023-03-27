@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clube Toastmaster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #2f8bb6;
+            color: #fff;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+        }
+
+        input, button {
+            padding: 5px 10px;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button.started {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        button.stopped {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            text-align: left;
+            padding: 10px;
+        }
+
+        th {
+            background-color: #2f8bb6;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <img class="logo" src="https://upload.wikimedia.org/wikipedia/en/0/05/Toastmasters_2011.png" alt="Logo Clube Toastmaster">
+        ADP Labs Brazil Toastmasters Club
+    </h1>
+    <div class="container">
+        <div class="input-group">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome">
+            <label for="cargo">Cargo:</label>
+            <input type="text" id="cargo" name="cargo">
+            <label for="timer">Tempo:</label>
+            <input type="text" id="timer" name="timer" readonly>
+            <button id="iniciarParar">Iniciar/Parar</button>
+        </div>
+        <h2>Histórico</h2>
+        <table id="historico">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Tempo</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let timer = document.getElementById('timer');
+        let iniciarPararBtn = document.getElementById('iniciarParar');
+        let historico = document.getElementById('historico').getElementsByTagName('tbody')[0];
+
+        let interval;
+        let time = 0;
+        let isRunning = false;
+
+        function formatTime(seconds) {
+            let minutes = Math.floor(seconds / 60);
+            seconds %= 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTime() {
+            time++;
+            timer.value = formatTime(time);
+        }
+
+        iniciarPararBtn.addEventListener('click', function() {
+            if (!isRunning) {
+                interval = setInterval(updateTime, 1000);
+                isRunning = true;
+                iniciarPararBtn.textContent = 'Parar';
+            } else {
+                clearInterval(interval);
+                isRunning = false;
+                iniciarPararBtn.textContent = 'Iniciar';
+
+                let nome = document.getElementById('nome').value.trim();
+                let cargo = document.getElementById('cargo').value.trim();
+
+                if (nome && cargo) {
+                    let newRow = historico.insertRow(-1);
+                    newRow.insertCell(0).innerText = nome;
+                    newRow.insertCell(1).innerText = cargo;
+                    newRow.insertCell(2).innerText = timer.value;
+
+                    document.getElementById('nome').value = '';
+                    document.getElementById('cargo').value = '';
+                }
+
+                time = 0;
+                timer.value = formatTime(time);
+            }
+        });
+    </script>
+</body>
+</html>
